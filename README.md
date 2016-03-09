@@ -9,3 +9,13 @@
 #### Running
 
 Just: `npm start`
+
+#### Check this out
+
+Using [httpie](https://github.com/jkbrzt/httpie)
+```
+> http -f :8080/api/authenticate name='Rember Johrdan' password=wrong
+> http -f :8080/api/authenticate name=wrong password=xpew!
+> http -f :8080/api/authenticate name='Rember Johrdan' password=xpew!
+```
+or use [Postman](http://www.getpostman.com/) instead.

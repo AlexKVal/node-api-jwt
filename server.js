@@ -1,3 +1,4 @@
+'use strict'
 const express = require('express')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
@@ -45,6 +46,30 @@ app.get('/setup', function(req, res) {
 const api = express.Router()
 
 // POST http://localhost:8080/api/authenticate
+api.post('/authenticate', function(req, res) {
+  const submittedName = req.body.name
+  const submittedPassword = req.body.password
+
+  User.findOne({ name: submittedName }, (err, user) => {
+    if (err) throw err
+
+    if (!user) {
+      return res.json({ success: false, message: 'User not found' })
+    }
+
+    if (user.password !== submittedPassword) {
+      return res.json({ success: false, message: 'Wrong password' })
+    }
+
+    const token = jwt.sign(user, app.get('jwtSecret'), { expiresInMinutes: 1440 }) // 24h
+
+    return res.json({
+      success: true,
+      message: 'Token',
+      token
+    })
+  })
+})
 
 // verify a token
 
