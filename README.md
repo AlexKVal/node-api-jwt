@@ -5,3 +5,7 @@
 `GET` `http://localhost:8080/api` This route is protected and will require a token.
 
 `GET` `http://localhost:8080/api/users` List all users. This route is protected and will require a token.
+
+#### Running
+
+Just: `npm start`
