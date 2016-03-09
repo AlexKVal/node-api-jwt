@@ -15,10 +15,10 @@ const app = express()
 app.set('jwtSecret', config.secret)
 app.set('env', process.env.NODE_ENV || 'development')
 
+app.use(morgan('dev'))
+
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-
-app.use(morgan('dev'))
 
 // routes
 app.get('/', function(req, res) {
@@ -26,7 +26,20 @@ app.get('/', function(req, res) {
 })
 
 // API
+app.get('/setup', function(req, res) {
+  const sampleUser = new User({
+    name: 'Rember Johrdan',
+    password: 'xpew!',
+    admin: true
+  })
 
+  sampleUser.save((err) => {
+    if (err) throw err
+
+    console.log('Rember saved successfully')
+    res.json({ success: true })
+  })
+})
 
 
 app.listen(port, () => console.log(`The server listens on port ${port}`))
