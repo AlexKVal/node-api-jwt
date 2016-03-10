@@ -61,7 +61,7 @@ api.post('/authenticate', function(req, res) {
       return res.json({ success: false, message: 'Wrong password' })
     }
 
-    const token = jwt.sign(user, app.get('jwtSecret'), { expiresInMinutes: 1440 }) // 24h
+    const token = jwt.sign(user, app.get('jwtSecret'), { expiresIn: 1440 * 60 }) // 24h
 
     return res.json({
       success: true,
@@ -72,6 +72,21 @@ api.post('/authenticate', function(req, res) {
 })
 
 // verify a token
+// this middleware has to be beneath the "/api/authenticate" route
+api.use(function(req, res, next) {
+  // Authorization Bearer [0]
+  const tokenAuthHeader = req.headers['authorization'] && req.headers['authorization'].match(/Bearer\s(\S+)/)[1]
+  const tokenSent = req.body.token || req.headers['x-access-token'] || tokenAuthHeader
+
+  if (!tokenSent) return res.status(403).send({success: false, message: 'No token provided'})
+
+  jwt.verify(tokenSent, app.get('jwtSecret'), function(err, decoded) {
+    if (err) return res.json({sucess: false, message: 'Failed to authenticate token'})
+
+    req.decoded = decoded
+    next()
+  })
+})
 
 // GET http://localhost:8080/api/
 api.get('/', function(req, res) {
